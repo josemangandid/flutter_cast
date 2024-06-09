@@ -15,12 +15,13 @@ class _CastPageState extends State<CastPage> {
   @override
   void initState() {
     super.initState();
-    _controller.startSearch();
+    _controller.searchingDevices.addListener(_searchingListener);
     _controller.currentTimeNotifier.addListener(_updateUI);
     _controller.playerStateNotifier.addListener(_updateUI);
     _controller.devicesNotifier.addListener(_updateUI);
     _controller.standByNotifier.addListener(_handleStandBy);
     _controller.sessionState.addListener(_sessionState);
+    _controller.startSearch();
   }
 
   @override
@@ -34,6 +35,10 @@ class _CastPageState extends State<CastPage> {
 
   void _updateUI() {
     setState(() {});
+  }
+
+  void _searchingListener(){
+    _updateUI();
   }
 
 
@@ -71,10 +76,16 @@ class _CastPageState extends State<CastPage> {
               Center(
                 child: Text('Error: ${_controller.error}'),
               )
-            else if (_controller.devicesNotifier.value.isEmpty)
+            else if (_controller.searchingDevices.value)
               Center(
                 child: CircularProgressIndicator(),
               )
+            else if (_controller.devicesNotifier.value.isEmpty)
+                Center(
+                  child: Text(
+                    'No Chromecast founded',
+                  ),
+                )
             else
               Column(
                 children: [

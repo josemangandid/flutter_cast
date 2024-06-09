@@ -17,6 +17,7 @@ class ChromecastController {
   final ValueNotifier<String> playerStateNotifier =
       ValueNotifier<String>("IDLE");
   final ValueNotifier<bool> standByNotifier = ValueNotifier<bool>(false);
+  final ValueNotifier<bool> searchingDevices = ValueNotifier<bool>(false);
   final ValueNotifier<List<CastDevice>> devicesNotifier =
       ValueNotifier<List<CastDevice>>([]);
   final ValueNotifier<CastSessionState> sessionState = ValueNotifier<CastSessionState>(CastSessionState.connecting);
@@ -28,11 +29,15 @@ class ChromecastController {
 
   Future<void> startSearch() async {
     try {
+      searchingDevices.value = true;
       devicesNotifier.value = await CastDiscoveryService().search();
       hasError = false;
+      print("TERMINATE");
+      searchingDevices.value = false;
     } catch (e) {
       hasError = true;
       error = e.toString();
+      searchingDevices.value = false;
     }
   }
 
